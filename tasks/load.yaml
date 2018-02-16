@@ -1,0 +1,10 @@
+---
+- name: include platform specific tasks
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files: load.yaml
+      paths:
+        - "{{ playbook_dir }}/providers/{{ ansible_network_os }}/network-config"
+        - "{{ role_path }}/providers/{{ ansible_network_os }}"
+        - "/etc/ansible/network/{{ ansible_network_os }}/network-config"
+      skip: no

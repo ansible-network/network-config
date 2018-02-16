@@ -1,0 +1,15 @@
+---
+# render the device configuration based on the template files found in the
+# source directory.  The optional exclude_files and include_files arguments can
+# be used to filter which files ultimately templated.
+#
+# The rendered configuration can be accessed in the configuration fact for the
+# host
+- name: render configuration for device
+  config_template:
+    source_dirs: "{{ source_dirs }}"
+    exclude_files: "{{ exclude_files | default(omit) }}"
+    include_files: "{{ include_files | default(omit) }}"
+    private_vars: "{{ private_vars | default(omit) }}"
+    skip: yes
+  register: configuration

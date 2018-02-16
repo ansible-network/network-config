@@ -1,0 +1,10 @@
+---
+- name: check for required fact ansible_network_os
+  fail:
+    msg: missing required variable ansible_network_os
+  when: ansible_network_os is undefined
+
+- name: retrieve current configuration from device
+  get_config:
+    source: running
+  register: configuration

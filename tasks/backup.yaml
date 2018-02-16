@@ -1,0 +1,15 @@
+---
+- name: get the current active configuration
+  include_tasks: get.yaml
+
+- name: check the backup path exists
+  file:
+    path: "{{ backup_path }}"
+    state: directory
+  run_once: yes
+  delegate_to: localhost
+
+- name: write the active configuration to disk
+  copy:
+    content: "{{ configuration.text }}"
+    dest: "{{ backup_path }}/{{ filename }}"
