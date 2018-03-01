@@ -1,10 +1,21 @@
 ---
 - name: check for required fact ansible_network_os
   fail:
-    msg: missing required variable ansible_network_os
+    msg: "missing required fact: ansible_network_os"
   when: ansible_network_os is undefined
+
+- name: import platform specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files: "{{ ansible_network_os }}.yaml"
+      paths:
+        - "{{ playbook_dir }}/vars/network_config"
+        - "/etc/ansible/network/network_config"
+        - "{{ role_path }}/vars"
+      skip: yes
 
 - name: retrieve current configuration from device
   get_config:
     source: running
+    format: "{{ config_format | default(omit) }}"
   register: configuration
