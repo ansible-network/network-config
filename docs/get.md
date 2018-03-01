@@ -1,46 +1,67 @@
-# Task get
+# Get
 The ```get``` task can be used to retrieve the current active (running)
 configuration from the network device.  The ```get``` task implements a set of
 tasks providers that are based on the value of the ```ansible_network_os```
 fact.  
 
-The ```get``` tasks will first check if the ```ansible_network_os``` fact has
-been configured and, if it has not been configured, it will set the value to
-default.
+## How to retrieve the current device configuration
+In order to retrieve the current device configuration simply import this action
+in the playbook and the current active (running) configuration will be
+retrieved from the host.  
 
-The task will then include the set of platform specific tasks in order to
-retrieve the current device running configuration.  The task will look for the
-the platform specific tasks using the following order:
+```
+---
+- hosts: all
+  
+  tasks:
+    - name: backup all configurations
+      import_role:
+        name: network-config
+        tasks_from: get
+```
 
-1) {{ playbook_dir }}/providers/{{ ansible_network_os }}/network-config/get.yaml
-2) {{ role_path }}/providers/{{ ansible_network_os }}/get.yaml
-3) /etc/ansible/network/{{ ansible_network_os }}/network-config/get.yaml
+The contents of the configuration will be available in the host fact
+```configuration```.  In order to see the contents of the configuration on the
+console, use the [debug](http://http://docs.ansible.com/ansible/latest/debug_module.html) 
+module.
 
-If the task is unable to find a sutable module in one of the preceeding
-locations, the ```get``` task will error.
+```
+---
+- hosts: all
+  
+  tasks:
+    - name: backup all configurations
+      import_role:
+        name: network-config
+        tasks_from: get
+
+    - debug: var=configuration.text
+```
+
+
+## How to change the configuration output format
+Some network devices support returning the configuration in different output
+formats.  For instance, JUNOS based devices can return the configuration as
+text (junos format), xml or set.  If you need to change the format of the
+device configuration output, set the ```config_format``` variable for that
+host.
+
+This action will automatically load platform specific variables.  It searchs
+for variable files to inlcude when the task is executed.  Platform specific
+variables are loaded based on precedence.  
+
+The action will attempt to find and load platform specific variables in the
+following order:
+
+* ```{{ playbook_dir }}/vars/network_config/{{ ansible_network_os }}.yaml``` 
+* ```/etc/ansible/network/network_config/{{ ansible_network_os }}.yaml``` 
+* ```{{ role_path }}/vars/{{ ansible_network_os }}.yaml``` 
+
 
 ## Requirements
 The following is the list of requirements for using the this task:
 
 * Ansible 2.5 or later
-* Connection ```network_cli```
-
-## Suppported providers
-This task includes providers for the following set of providers:
-
-* asa
-* eos
-* ios
-* iosxr
-* junos
-* nxos
-* vyos
-
-## Adding additional platform support
-The ```get``` task can be extended to support additional network devices by
-provider providers that return the device configuration.  In order to provide
-support for additional platforms, simply add the ```get.yaml``` tasks in once
-of the search locations and the role will automatically find it.
 
 ## Arguments
 The ```get``` task has no configurable arguments.

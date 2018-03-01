@@ -6,10 +6,9 @@
   file:
     path: "{{ backup_path }}"
     state: directory
-  run_once: yes
   delegate_to: localhost
 
 - name: write the active configuration to disk
   copy:
     content: "{{ configuration.text }}"
-    dest: "{{ backup_path }}/{{ filename }}"
+    dest: "{{ backup_path }}/{{ backup_filename }}"

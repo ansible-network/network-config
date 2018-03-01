@@ -53,7 +53,7 @@ None
 ## Dependencies
 The following is the list of dependencies on other roles this role requires.
 
-* network-engine
+* [network-engine](http://github.com/ansible-network/network-engine)
 
 ## License
 GPLv3

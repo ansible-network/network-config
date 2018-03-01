@@ -5,7 +5,7 @@
 backup_path: "{{ playbook_dir }}/backups"
 
 # default filename for backups
-filename: "{{ inventory_hostname_short }}.cfg"
+backup_filename: "{{ inventory_hostname_short }}.cfg"
 
 # default location to find configuration templates
 source_dirs:
