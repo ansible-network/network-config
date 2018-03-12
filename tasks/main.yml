@@ -1,2 +1,13 @@
 ---
 # tasks file for network-config
+- name: check for required fact ansible_network_os
+  fail:
+    msg: "missing required fact: ansible_network_os"
+  when: ansible_network_os is undefined
+
+- name: check connection is network_cli
+  fail:
+    msg: "backup is only supported when using connection=network_cli"
+  when: ansible_connection != 'network_cli'
+
+
