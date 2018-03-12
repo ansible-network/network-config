@@ -4,6 +4,11 @@ configuration from the network device.  The ```get``` task implements a set of
 tasks providers that are based on the value of the ```ansible_network_os```
 fact.  
 
+After the device configuration is retrieved, this task will attempt to parse
+the configuration into a set of Ansible facts.  The parsing is based on a set
+of parser files that are embebbed int he ```files/parsers``` directory in this
+role.  
+
 ## How to retrieve the current device configuration
 In order to retrieve the current device configuration simply import this action
 in the playbook and the current active (running) configuration will be
@@ -36,32 +41,35 @@ module.
         tasks_from: get
 
     - debug: var=configuration.text
+    - debug: var=ansible_network_config
 ```
 
+## How to disable the automatic config parser
+In some instanced, it may be desirable to disable to the automatic parsing of
+the configuration  file.  In order to disable the parsing function, set the
+role variable ```enable_config_parser``` to ```False```.
 
-## How to change the configuration output format
-Some network devices support returning the configuration in different output
-formats.  For instance, JUNOS based devices can return the configuration as
-text (junos format), xml or set.  If you need to change the format of the
-device configuration output, set the ```config_format``` variable for that
-host.
+```
+---
+- hosts: all
+  
+  tasks:
+    - name: backup all configurations
+      import_role:
+        name: network-config
+        tasks_from: get
+      vars:
+        enable_config_parser: no
 
-This action will automatically load platform specific variables.  It searchs
-for variable files to inlcude when the task is executed.  Platform specific
-variables are loaded based on precedence.  
-
-The action will attempt to find and load platform specific variables in the
-following order:
-
-* ```{{ playbook_dir }}/vars/network_config/{{ ansible_network_os }}.yaml``` 
-* ```/etc/ansible/network/network_config/{{ ansible_network_os }}.yaml``` 
-* ```{{ role_path }}/vars/{{ ansible_network_os }}.yaml``` 
-
+    - debug: var=configuration.text
+    - debug: var=ansible_network_config
+```
 
 ## Requirements
 The following is the list of requirements for using the this task:
 
 * Ansible 2.5 or later
+* Ansible network-engine role
 
 ## Arguments
 The ```get``` task has no configurable arguments.

@@ -40,10 +40,30 @@ the backup path to generate the full path to the backed up configuration.
 
 The default value is ```{{ inventory_hostname_short }}.cfg```
 
+### config_parser_path
+The value used to find the parser files used to parse the device running
+configuration.  Typically this value does not need to be changed as the role
+has embedded parsers.  
+
+The default value is ```{{ role_path }}/files/parsers/{{ ansible_network_os }}```
+
+### enable_config_parser
+By default, when callin the `get` tasks, the role will attempt to parse the
+configuration based on the parsers.  To disable the parsing operation, set this
+vale to False.
+
+The default value is ```True```
+
+### commands
+The `commands` role variable contains a dictionary of commands used by various
+tasks in this role.  Changing the values of this dictionary object could cause
+the role to stop working.  Please see the ```defaults/main.yml``` for the how
+this value is configured.
+
 ## Modules
 The following is a list of modules that are provided by this role.
 
-None
+* config_parser [[source]](library/config_parser.py)
 
 ## Plugins
 The following is a list of plugins that are provided by this role.

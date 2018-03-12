@@ -7,7 +7,17 @@ backup_path: "{{ playbook_dir }}/backups"
 # default filename for backups
 backup_filename: "{{ inventory_hostname_short }}.cfg"
 
-# default location to find configuration templates
-source_dirs:
-  - "{{ playbook_dir }}/templates/{{ ansible_network_os }}"
-  - "/etc/ansible/network/templates/{{ ansible_network_os }}"
+# the path to use to find the config parsers
+config_parser_path: "{{ role_path }}/files/parsers/{{ ansible_network_os }}"
+
+# enable or disable the parsing of the configuration
+enable_config_parser: yes
+
+# the commands used to retrieve the device configuration over cli.  This value
+# doesn't normally need to be changed and changing it could cause the role to
+# stop working.
+network_config_commands:
+  get_config:
+    default: show running-config
+    junos: show configuration | display set
+    vyos: show configuration commands

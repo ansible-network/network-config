@@ -4,8 +4,22 @@
     msg: "missing required fact: ansible_network_os"
   when: ansible_network_os is undefined
 
+- name: check connection is network_cli
+  fail:
+    msg: "backup is only supported when using connection=network_cli"
+  when: ansible_connection != 'network_cli'
+
 - name: retrieve the current active (running) configuration
-  get_config:
-    source: running
-    filter: "{{ config_filter | default(omit) }}"
+  cli:
+    command: "{{ network_config_commands.get_config[ansible_network_os] | default(network_config_commands.get_config['default']) }}"
   register: configuration
+
+- name: set configuration fact
+  set_fact:
+    configuration: "{{ configuration.stdout }}"
+
+- name: parse device configuration and populate ansible_network_config fact
+  config_parser:
+    src: "{{ config_parser_path }}"
+    config: "{{ configuration }}"
+  when: enable_config_parser | bool
